@@ -4,13 +4,18 @@ WORKDIR /app
 
 RUN apk add --no-cache ca-certificates
 
-# Copy everything first
+# Step 1: prepare modules
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+# Step 2: copy full source
 COPY . .
 
-# Tidy and download once all source files are present
-RUN go mod tidy && go mod download
+# Step 3: tidy again (to resolve new imports after source code is copied)
+RUN go mod tidy
 
-# Now build
+# Step 4: build
 RUN go build -o chat-server .
 
 # --- Runtime image ---
