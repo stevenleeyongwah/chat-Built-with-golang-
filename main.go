@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-
+	"go-chat/controllers"
 	_ "github.com/lib/pq"
 	"go-chat/storage"
 )
@@ -27,7 +27,7 @@ func main() {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		ServeWs(hub, w, r)
 	})
-	http.HandleFunc("/messages", handleGetMessages)
+	http.HandleFunc("/messages", controllers.GetMessages)
 
 	// ✅ Start server
 	log.Println("Server started at :8080")

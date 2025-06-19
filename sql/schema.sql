@@ -6,7 +6,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE chat_groups (
+CREATE TABLE groups (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     is_private BOOLEAN DEFAULT FALSE,
@@ -14,7 +14,7 @@ CREATE TABLE chat_groups (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE chat_group_members (
+CREATE TABLE group_users (
     group_id INT REFERENCES chat_groups(id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
