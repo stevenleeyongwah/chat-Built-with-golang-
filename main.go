@@ -27,6 +27,7 @@ func main() {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		ServeWs(hub, w, r)
 	})
+	http.HandleFunc("/messages", handleGetMessages)
 
 	// ✅ Start server
 	log.Println("Server started at :8080")
