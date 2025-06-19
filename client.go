@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gorilla/websocket"
 	"net/http"
+	"go-chat/storage"
 )
 
 type Client struct {

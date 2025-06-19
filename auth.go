@@ -1,9 +1,17 @@
+package main
+
 import (
 	"github.com/golang-jwt/jwt/v5"
 	"time"
+	"net/http"
+	"encoding/json"
+	"golang.org/x/crypto/bcrypt"
+	"database/sql"
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 var jwtKey = []byte("your_secret_key")
+var db *sql.DB
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var req struct {
@@ -33,4 +41,22 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	tokenString, _ := token.SignedString(jwtKey)
 
 	json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
+}
+
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	hashedPwd, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+
+	_, err := db.Exec("INSERT INTO users (username, password_hash) VALUES ($1, $2)", req.Username, string(hashedPwd))
+	if err != nil {
+		http.Error(w, "Username taken", 400)
+		return
+	}
+
+	w.WriteHeader(201)
 }

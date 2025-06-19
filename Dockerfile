@@ -1,33 +1,27 @@
-# Use official Go image
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
-# Add CA certificates and git (for go get)
-RUN apk update && apk add --no-cache ca-certificates git
-
-# Set working directory
 WORKDIR /app
 
-# Cache dependencies
-COPY go.mod go.sum ./
-RUN go mod download
+RUN apk add --no-cache ca-certificates
 
-# Copy source code
+# Copy everything first
 COPY . .
 
-# Build the Go binary
-RUN go build -o chat-server ./cmd/main.go
+# Tidy and download once all source files are present
+RUN go mod tidy && go mod download
 
-# Final image: small and fast
+# Now build
+RUN go build -o chat-server .
+
+# --- Runtime image ---
 FROM alpine:latest
 
-# Add certificates
 RUN apk --no-cache add ca-certificates
 
-# Copy binary from builder
-COPY --from=builder /app/chat-server /chat-server
+WORKDIR /app
 
-# Expose WebSocket server port
+COPY --from=builder /app/chat-server .
+
 EXPOSE 8080
 
-# Run the server
-ENTRYPOINT ["/chat-server"]
+ENTRYPOINT ["./chat-server"]
