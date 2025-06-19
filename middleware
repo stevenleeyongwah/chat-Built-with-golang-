@@ -1,0 +1,12 @@
+func ParseJWT(tokenStr string) (int, error) {
+	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil || !token.Valid {
+		return 0, err
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+	userID := int(claims["user_id"].(float64))
+	return userID, nil
+}
