@@ -28,6 +28,7 @@ func main() {
 		ServeWs(hub, w, r)
 	})
 	http.HandleFunc("/messages", controllers.GetMessages)
+	http.HandleFunc("/groups", controllers.ListGroups)
 
 	// ✅ Start server
 	log.Println("Server started at :8080")
